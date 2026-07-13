@@ -17,6 +17,7 @@
 
 <header id="topbar">
   <button id="btnMenu" class="icon-btn" aria-label="Lista de calles">☰</button>
+  <button id="btnSearch" class="icon-btn" aria-label="Buscar calle">🔍</button>
   <div id="progress">
     <div id="progressBar"><div id="progressFill"></div></div>
     <span id="progressText">0 / 0 calles</span>
@@ -35,8 +36,14 @@
     <label><input type="radio" name="filtro" value="pendientes" /> Pendientes</label>
     <label><input type="radio" name="filtro" value="hechas" /> Hechas</label>
   </div>
+  <select id="zoneFilter">
+    <option value="">Todas las zonas</option>
+  </select>
+  <button id="btnNearMe" class="near-me-btn">📍 Ordenar por cercanía a mí</button>
   <ul id="streetList"></ul>
 </aside>
+
+<div id="legend"></div>
 
 <div id="panelOverlay"></div>
 
@@ -52,6 +59,19 @@
     <p>Tu nombre se usará para saber quién ha completado cada calle. Se guarda solo en este móvil.</p>
     <input id="nameInput" type="text" placeholder="Ej: Mario" maxlength="40" />
     <button id="btnSaveName">Empezar</button>
+  </div>
+</div>
+
+<div id="confirmModal" class="modal hidden">
+  <div class="modal-box">
+    <h2 id="confirmTitle">¿Calle completada?</h2>
+    <p id="confirmSubtitle"></p>
+    <div id="confirmMissingWrap" class="hidden">
+      <input id="confirmMissingInput" type="text" placeholder="Ej: 2, 4, 8B" maxlength="120" />
+    </div>
+    <button id="btnConfirmAll" class="confirm-primary">✅ Sí, repartido todo</button>
+    <button id="btnConfirmPartial" class="confirm-secondary">⚠️ Faltan algunos números</button>
+    <button id="btnConfirmCancel" class="confirm-cancel">Cancelar</button>
   </div>
 </div>
 

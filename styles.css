@@ -2,7 +2,8 @@
   --bg:#eef1f5;
   --ink:#1e293b;
   --accent:#2563eb;
-  --done:#2563eb;
+  --done:#16a34a;
+  --partial:#f59e0b;
   --pending:#94a3b8;
   --panel-bg:#ffffff;
 }
@@ -45,6 +46,12 @@ html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Ro
 #search{margin:8px 14px;padding:10px 12px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px;}
 #filterRow{display:flex;gap:10px;padding:0 14px 8px;font-size:12px;color:#475569;flex-wrap:wrap;}
 #filterRow label{display:flex;align-items:center;gap:4px;}
+#zoneFilter{margin:0 14px 10px;padding:8px 10px;border-radius:8px;border:1px solid #cbd5e1;font-size:13px;background:#fff;}
+.near-me-btn{
+  margin:0 14px 10px;padding:9px 10px;border-radius:8px;border:1px solid #bfdbfe;
+  background:#eff6ff;color:#1d4ed8;font-size:13px;font-weight:600;cursor:pointer;
+}
+.near-me-btn.active{background:#2563eb;color:#fff;border-color:#2563eb;}
 #streetList{list-style:none;margin:0;padding:0 6px 20px;overflow-y:auto;flex:1;}
 #streetList li{
   display:flex;align-items:center;gap:10px;
@@ -53,9 +60,12 @@ html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Ro
 #streetList li:active{background:#f1f5f9;}
 #streetList .dot{width:12px;height:12px;border-radius:50%;flex:none;background:var(--pending);}
 #streetList li.done .dot{background:var(--done);}
+#streetList li.partial .dot{background:var(--partial);}
 #streetList li.done .name{color:#64748b;text-decoration:line-through;}
+#streetList li.partial .name{color:#92400e;}
 #streetList .name{flex:1;}
 #streetList .segs{font-size:11px;color:#94a3b8;}
+#streetList .dist{font-size:11px;color:#2563eb;font-weight:700;flex:none;}
 
 #panelOverlay{
   position:fixed;inset:0;background:rgba(15,23,42,.35);z-index:1300;
@@ -84,7 +94,12 @@ html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Ro
 .modal-box h2{margin:0 0 8px;}
 .modal-box p{margin:0 0 14px;font-size:14px;color:#475569;}
 .modal-box input{width:100%;padding:12px;border-radius:10px;border:1px solid #cbd5e1;font-size:16px;margin-bottom:12px;}
-.modal-box button{width:100%;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:16px;font-weight:600;cursor:pointer;}
+.modal-box button{width:100%;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:10px;}
+.modal-box button:last-child{margin-bottom:0;}
+.modal-box button.confirm-primary{background:var(--done);}
+.modal-box button.confirm-secondary{background:var(--partial);}
+.modal-box button.confirm-cancel{background:#e2e8f0;color:#334155;}
+#confirmMissingWrap.hidden{display:none;}
 
 .street-tooltip{
   background:rgba(255,255,255,.9);border:none;box-shadow:0 1px 4px rgba(0,0,0,.25);
@@ -98,6 +113,16 @@ html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Ro
   font-size:14px;font-weight:600;cursor:pointer;
 }
 .street-popup button.undo{background:#e2e8f0;color:#334155;}
+
+#legend{
+  position:fixed;left:14px;bottom:28px;z-index:900;
+  background:rgba(255,255,255,.94);border-radius:12px;padding:8px 12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:12px;max-width:150px;
+}
+#legend .item{display:flex;align-items:center;gap:6px;padding:2px 0;cursor:pointer;}
+#legend .sw{width:12px;height:12px;border-radius:4px;flex:none;}
+
+.leaflet-control-layers{border-radius:10px !important;}
 
 .me-pulse{border-radius:50%;background:#2563eb;box-shadow:0 0 0 rgba(37,99,235,.6);animation:pulse 2s infinite;}
 @keyframes pulse{

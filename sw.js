@@ -1,4 +1,4 @@
-const CACHE = 'reparto-sab-v1';
+const CACHE = 'reparto-sab-v2';
 const ASSETS = [
   './',
   'index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   'config.js',
   'manifest.json',
   'streets.geojson',
+  'zones.json',
   'lib/leaflet.js',
   'lib/leaflet.css',
   'lib/supabase.js',
@@ -27,8 +28,8 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  // Nunca cachear llamadas a Supabase: siempre en tiempo real desde la red.
-  if (url.hostname.endsWith('supabase.co')) return;
+  // Nunca cachear llamadas a Supabase (tiempo real) ni las teselas de satélite (pesan mucho).
+  if (url.hostname.endsWith('supabase.co') || url.hostname.endsWith('ign.es')) return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {

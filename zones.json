@@ -1,0 +1,52 @@
+[
+  {
+    "id": "montesano",
+    "nombre": "Montesano",
+    "color": "#fde68a",
+    "anchor": [
+      -0.51088,
+      39.57901
+    ],
+    "radiusMeters": 1255
+  },
+  {
+    "id": "cumbres",
+    "nombre": "Cumbres de San Antonio",
+    "color": "#bbf7d0",
+    "anchor": [
+      -0.4817,
+      39.567
+    ],
+    "radiusMeters": 1430
+  },
+  {
+    "id": "colinas",
+    "nombre": "Colinas de San Antonio",
+    "color": "#c7d2fe",
+    "anchor": [
+      -0.4978,
+      39.55169
+    ],
+    "radiusMeters": 1430
+  },
+  {
+    "id": "san-vicente",
+    "nombre": "San Vicente",
+    "color": "#fecaca",
+    "anchor": [
+      -0.504,
+      39.563
+    ],
+    "radiusMeters": 429
+  },
+  {
+    "id": "benagolf",
+    "nombre": "Benagolf",
+    "color": "#a7f3d0",
+    "anchor": [
+      -0.4743,
+      39.57046
+    ],
+    "radiusMeters": 1287
+  }
+]
