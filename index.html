@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Reparto San Antonio de Benagéber</title>
+<meta name="theme-color" content="#1e293b" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icons/icon.svg" />
+<link rel="stylesheet" href="lib/leaflet.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div id="map"></div>
+
+<header id="topbar">
+  <button id="btnMenu" class="icon-btn" aria-label="Lista de calles">☰</button>
+  <div id="progress">
+    <div id="progressBar"><div id="progressFill"></div></div>
+    <span id="progressText">0 / 0 calles</span>
+  </div>
+  <button id="btnUser" class="icon-btn" aria-label="Cambiar nombre">👤</button>
+</header>
+
+<aside id="panel">
+  <div id="panelHeader">
+    <h2>Calles</h2>
+    <button id="btnClosePanel" class="icon-btn">✕</button>
+  </div>
+  <input id="search" type="search" placeholder="Buscar calle…" autocomplete="off" />
+  <div id="filterRow">
+    <label><input type="radio" name="filtro" value="todas" checked /> Todas</label>
+    <label><input type="radio" name="filtro" value="pendientes" /> Pendientes</label>
+    <label><input type="radio" name="filtro" value="hechas" /> Hechas</label>
+  </div>
+  <ul id="streetList"></ul>
+</aside>
+
+<div id="panelOverlay"></div>
+
+<div id="locateControls">
+  <button id="btnLocate" class="fab" aria-label="Seguir mi ubicación">📍</button>
+</div>
+
+<div id="toast"></div>
+
+<div id="nameModal" class="modal hidden">
+  <div class="modal-box">
+    <h2>¿Quién eres?</h2>
+    <p>Tu nombre se usará para saber quién ha completado cada calle. Se guarda solo en este móvil.</p>
+    <input id="nameInput" type="text" placeholder="Ej: Mario" maxlength="40" />
+    <button id="btnSaveName">Empezar</button>
+  </div>
+</div>
+
+<script src="lib/leaflet.js"></script>
+<script src="lib/supabase.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "Reparto San Antonio de Benagéber",
+  "short_name": "Reparto SAB",
+  "description": "Mapa de calles para reparto de publicidad puerta por puerta en San Antonio de Benagéber",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eef1f5",
+  "theme_color": "#1e293b",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
