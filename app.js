@@ -18,6 +18,11 @@
   let lastPos = null; // {lat, lon} del último fix GPS conocido
   let nearMeMode = false;
   let pendingConfirmId = null;
+  let wakeLock = null;
+  let lastTrackedLatLng = null;
+  const TRACK_KEY = 'benageber_recorrido';
+  const MIN_ACCURACY_M = 40; // ignorar fixes GPS peores que esto para no ensuciar el recorrido
+  const MIN_MOVE_M = 4; // ignorar puntos si apenas nos hemos movido (evita "temblores" del GPS parado)
 
   const IGN_PNOA_URL = 'https://www.ign.es/wmts/pnoa-ma?service=WMTS&request=GetTile&version=1.0.0&layer=OI.OrthoimageCoverage&style=default&tilematrixset=GoogleMapsCompatible&tilematrix={z}&tilerow={y}&tilecol={x}&format=image/jpeg';
 
@@ -364,13 +369,40 @@
   }
 
   // ---------- Geolocalización + recorrido ----------
+  async function requestWakeLock() {
+    if (!('wakeLock' in navigator)) return;
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } catch (e) {
+      // el navegador puede denegarlo (p.ej. batería baja); no es crítico
+    }
+  }
+  function releaseWakeLock() {
+    if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && watchId !== null && !wakeLock) requestWakeLock();
+  });
+
+  function restoreTrack() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(TRACK_KEY) || '[]');
+      if (saved.length > 1) {
+        trackPolyline = L.polyline(saved, { color: '#ef4444', weight: 3, opacity: 0.8, dashArray: '1,8', lineCap: 'round' }).addTo(map);
+        lastTrackedLatLng = saved[saved.length - 1];
+      }
+    } catch (e) { /* ignorar recorrido corrupto */ }
+  }
+
   function toggleTracking() {
     const btn = document.getElementById('btnLocate');
     if (watchId !== null) {
       navigator.geolocation.clearWatch(watchId);
       watchId = null;
       btn.classList.remove('active');
-      showToast('Seguimiento de ubicación detenido');
+      releaseWakeLock();
+      showToast('Seguimiento detenido (el recorrido sigue dibujado)');
       return;
     }
     if (!navigator.geolocation) {
@@ -378,6 +410,8 @@
       return;
     }
     btn.classList.add('active');
+    requestWakeLock();
+    showToast('📍 Ubicación activa — mantén la pantalla encendida y la app abierta para que el recorrido no se corte');
     let first = true;
     watchId = navigator.geolocation.watchPosition(
       (pos) => {
@@ -400,10 +434,19 @@
           accuracyCircle.setLatLng(latlng).setRadius(accuracy);
         }
 
-        if (!trackPolyline) {
-          trackPolyline = L.polyline([latlng], { color: '#ef4444', weight: 3, opacity: 0.8, dashArray: '1,8', lineCap: 'round' }).addTo(map);
-        } else {
-          trackPolyline.addLatLng(latlng);
+        // Filtrar fixes poco fiables o casi idénticos al anterior, para que el recorrido no "tiemble"
+        const movedEnough = !lastTrackedLatLng || haversineMeters(lastTrackedLatLng[0], lastTrackedLatLng[1], latitude, longitude) >= MIN_MOVE_M;
+        if (accuracy <= MIN_ACCURACY_M && movedEnough) {
+          lastTrackedLatLng = latlng;
+          if (!trackPolyline) {
+            trackPolyline = L.polyline([latlng], { color: '#ef4444', weight: 3, opacity: 0.8, dashArray: '1,8', lineCap: 'round' }).addTo(map);
+          } else {
+            trackPolyline.addLatLng(latlng);
+          }
+          try {
+            const points = trackPolyline.getLatLngs().map((ll) => [ll.lat, ll.lng]);
+            localStorage.setItem(TRACK_KEY, JSON.stringify(points));
+          } catch (e) { /* almacenamiento lleno: no pasa nada, seguimos solo en memoria */ }
         }
 
         if (first) {
@@ -414,6 +457,7 @@
       (err) => {
         showToast('No se pudo acceder al GPS: ' + err.message);
         btn.classList.remove('active');
+        releaseWakeLock();
         watchId = null;
       },
       { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 }
@@ -464,6 +508,12 @@
     document.getElementById('zoneFilter').addEventListener('change', applyFilters);
     document.querySelectorAll('input[name="filtro"]').forEach((r) => r.addEventListener('change', applyFilters));
     document.getElementById('btnLocate').addEventListener('click', toggleTracking);
+    document.getElementById('btnClearTrack').addEventListener('click', () => {
+      if (trackPolyline) { map.removeLayer(trackPolyline); trackPolyline = null; }
+      lastTrackedLatLng = null;
+      localStorage.removeItem(TRACK_KEY);
+      showToast('Recorrido borrado');
+    });
     document.getElementById('btnUser').addEventListener('click', () => {
       document.getElementById('nameInput').value = getName() === 'Alguien' ? '' : getName();
       document.getElementById('nameModal').classList.remove('hidden');
@@ -535,6 +585,7 @@
     ]);
     zones = zonesData;
     initMap(geojson);
+    restoreTrack();
     await initSupabase(geojson);
 
     if ('serviceWorker' in navigator) {

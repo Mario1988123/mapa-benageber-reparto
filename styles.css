@@ -73,12 +73,13 @@ html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Ro
 }
 #panelOverlay.show{opacity:1;pointer-events:auto;}
 
-#locateControls{position:fixed;right:14px;bottom:28px;z-index:1000;}
+#locateControls{position:fixed;right:14px;bottom:28px;z-index:1000;display:flex;flex-direction:column;align-items:center;gap:10px;}
 .fab{
   width:52px;height:52px;border-radius:50%;border:none;
   background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);font-size:22px;cursor:pointer;
 }
 .fab.active{background:var(--accent);color:#fff;}
+.fab.fab-small{width:38px;height:38px;font-size:16px;}
 
 #toast{
   position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);
